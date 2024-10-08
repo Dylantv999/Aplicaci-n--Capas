@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Descargar Playlist de YouTube</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h2>Descargar Playlist de YouTube</h2>
+        <form id="playlist-form">
+            <label for="url">Enlace de la Playlist:</label>
+            <input type="text" id="url" placeholder="Ingresa el enlace de la playlist" required>
+
+            <label for="destination">Carpeta de destino (escriba la ruta):</label>
+            <input type="text" id="destination" placeholder="Ingresa la ruta de la carpeta de destino" required>
+            
+            <button type="submit">Descargar Playlist</button>
+        </form>
+        <div id="message"></div>
+    </div>
+
+    <script>
+        document.getElementById('playlist-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const url = document.getElementById('url').value;
+            const destination = document.getElementById('destination').value;
+
+            fetch('/download', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ url: url, destination: destination }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    document.getElementById('message').innerText = data.message;
+                } else if (data.error) {
+                    document.getElementById('message').innerText = data.error;
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>
